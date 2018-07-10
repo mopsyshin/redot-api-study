@@ -7,6 +7,11 @@ const sequelize = new Sequelize({
 });
 
 const Post = sequelize.define('Post', {
+  id: {
+    type: Sequelize.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
   title: {
     type: Sequelize.STRING,
   },

@@ -13,6 +13,20 @@ const index = (req, res) => {
     })
 }
 
+const show = (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (Number.isNaN(id)) {
+    return res.status(400).end();
+  }
+  models.Post.findOne({ where: {id} })
+      .then(post => {
+        res.json(post);
+      })
+      .catch(err => {
+        console.log(err);
+        res.status(500).end();
+      });
+}
 
 const create = (req, res) => {
   const title = req.body.title;
@@ -32,4 +46,32 @@ const create = (req, res) => {
     res.status(500).end();
   })
 }
-module.exports = {index, create}
+
+const update = (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (Number.isNaN(id)) {
+    return res.status(400).end();
+  }
+  const title = req.body.title;
+  if (!title) {
+    return res.status(400).end();
+  }
+  const body = req.body.body;
+  models.Post
+    .findOne({ where: {id} })
+    .then(post => {
+      post.title = title;
+      post.body = body;
+      post.save()
+          .then( _ => {
+            res.json(user);
+          })
+          .catch(err => {
+            if (err.name === 'SequelizeUniqueConstraintError') {
+              return res.status(409).end();
+            }
+          })
+    })
+}
+
+module.exports = {index, show, create, update}
