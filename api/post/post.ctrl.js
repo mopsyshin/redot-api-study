@@ -57,14 +57,16 @@ const update = (req, res) => {
     return res.status(400).end();
   }
   const body = req.body.body;
+  const author = req.body.author;
   models.Post
     .findOne({ where: {id} })
     .then(post => {
       post.title = title;
       post.body = body;
+      post.author = author;
       post.save()
           .then( _ => {
-            res.json(user);
+            res.json(post);
           })
           .catch(err => {
             if (err.name === 'SequelizeUniqueConstraintError') {
@@ -74,4 +76,16 @@ const update = (req, res) => {
     })
 }
 
-module.exports = {index, show, create, update}
+const destroy = (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (Number.isNaN(id)) {
+    return res.status(400).end();
+  }
+  models.Post
+      .destroy({ where: {id} })
+      .then(() => {
+        res.status(204).end();
+      });
+}
+
+module.exports = {index, show, create, update, destroy}
